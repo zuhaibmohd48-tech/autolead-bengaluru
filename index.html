@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoLead Bengaluru | Find Your Next Car</title>
+<meta name="description" content="Connect with used car dealers in Bengaluru.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <div class="logo">AUTO<span>LEAD</span></div>
+    <a href="#enquiry" class="nav-btn">Find a Car</a>
+</header>
+
+<section class="hero">
+    <div class="badge">● BENGALURU'S CAR CONNECTION</div>
+    <h1>Find Your<br><span>Perfect Car.</span></h1>
+    <p>Tell us what you're looking for. We'll help connect you with used car dealers in Bengaluru.</p>
+    <a href="#enquiry" class="primary-btn">Find My Car →</a>
+
+    <div class="hero-info">
+        <div><strong>Easy</strong><small>Enquiry Process</small></div>
+        <div><strong>Local</strong><small>Bengaluru Dealers</small></div>
+        <div><strong>Free</strong><small>Buyer Enquiry</small></div>
+    </div>
+</section>
+
+<section class="categories">
+    <h2>What are you looking for?</h2>
+    <p>Choose your preferred car category.</p>
+
+    <div class="car-grid">
+        <button type="button" class="car-card" data-car="Hatchback">🚗<span>Hatchback</span></button>
+        <button type="button" class="car-card" data-car="Sedan">🚘<span>Sedan</span></button>
+        <button type="button" class="car-card" data-car="SUV">🚙<span>SUV</span></button>
+        <button type="button" class="car-card" data-car="Any Car">🔍<span>Any Car</span></button>
+    </div>
+</section>
+
+<section class="enquiry" id="enquiry">
+    <div class="section-label">BUYER ENQUIRY</div>
+    <h2>Tell us your requirements.</h2>
+    <p>Submit your details and our team can connect you with a suitable dealer.</p>
+
+    <form id="leadForm">
+        <label>Your Name</label>
+        <input type="text" id="name" placeholder="Enter your name" required>
+
+        <label>Mobile Number</label>
+        <input type="tel" id="phone" placeholder="10-digit mobile number"
+        maxlength="10" inputmode="numeric" pattern="[6-9][0-9]{9}" required>
+
+        <label>Preferred Car</label>
+        <select id="car" required>
+            <option value="">Select car type</option>
+            <option>Hatchback</option>
+            <option>Sedan</option>
+            <option>SUV</option>
+            <option>Any Car</option>
+        </select>
+
+        <label>Your Budget</label>
+        <select id="budget" required>
+            <option value="">Select your budget</option>
+            <option>Below ₹2 lakh</option>
+            <option>₹2 lakh - ₹4 lakh</option>
+            <option>₹4 lakh - ₹6 lakh</option>
+            <option>₹6 lakh - ₹10 lakh</option>
+            <option>Above ₹10 lakh</option>
+        </select>
+
+        <label>Preferred Location</label>
+        <input type="text" id="location" placeholder="Example: Koramangala" required>
+
+        <label>When are you planning to buy?</label>
+        <select id="timeline" required>
+            <option value="">Select timeline</option>
+            <option>Immediately</option>
+            <option>Within 7 days</option>
+            <option>Within 30 days</option>
+            <option>Just exploring</option>
+        </select>
+
+        <label class="consent">
+            <input type="checkbox" id="consent" required>
+            I agree to be contacted about my car enquiry and to have my details shared with a relevant dealer for this purpose.
+        </label>
+
+        <button type="submit" class="submit-btn" id="submitBtn">
+            Submit My Enquiry →
+        </button>
+    </form>
+
+    <div id="message" role="status" aria-live="polite"></div>
+</section>
+
+<footer>
+    <div class="logo">AUTO<span>LEAD</span></div>
+    <p>Connecting car buyers with local dealers.</p>
+    <div class="developer-credit">
+        Designed &amp; Developed by
+        <strong>Mohammed Zuhaib</strong>
+    </div>
+    <small>© 2026 AutoLead Bengaluru. All rights reserved.</small>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="script.js" defer></script>
+
+</body>
+</html>
