@@ -1,109 +1,204 @@
+// =====================================
+// AUTOLEAD BENGALURU
+// Designed & Developed by Mohammed Zuhaib
+// =====================================
+
+// SUPABASE CONNECTION
 const SUPABASE_URL = "https://upskbpteegbiiyhdurdl.supabase.co";
 
-// Use your existing public publishable/anon key.
 const SUPABASE_KEY = "sb_publishable_4jwztvCOVnTFUrmqjdyhdQ_LI8MpL87";
 
-const form = document.getElementById("leadForm");
-const messageBox = document.getElementById("message");
-const submitBtn = document.getElementById("submitBtn");
-
+// CREATE DATABASE CONNECTION
 const db = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
 );
 
-// Category buttons
+// FORM ELEMENTS
+const form = document.getElementById("leadForm");
+const messageBox = document.getElementById("message");
+const submitBtn = document.getElementById("submitBtn");
+
+// =====================================
+// CAR SELECTION BUTTONS
+// =====================================
+
 document.querySelectorAll(".car-card").forEach(button => {
+
     button.addEventListener("click", () => {
-        document.getElementById("car").value = button.dataset.car;
-        
-        document.getElementById("enquiry").scrollIntoView({
-            behavior: "smooth"
-        });
+
+        const carInput = document.getElementById("car");
+
+        carInput.value = button.dataset.car;
+
+        const enquirySection = document.getElementById("enquiry");
+
+        if (enquirySection) {
+            enquirySection.scrollIntoView({
+                behavior: "smooth"
+            });
+        }
+
     });
+
 });
 
-// Show message
+// =====================================
+// DISPLAY MESSAGE
+// =====================================
+
 function showMessage(text, success) {
+
     messageBox.textContent = text;
+
     messageBox.style.display = "block";
     messageBox.style.padding = "14px";
     messageBox.style.marginTop = "15px";
     messageBox.style.borderRadius = "10px";
-    messageBox.style.background = success ? "#dcfce7" : "#fee2e2";
-    messageBox.style.color = success ? "#166534" : "#991b1b";
+
+    messageBox.style.background = success
+        ? "#dcfce7"
+        : "#fee2e2";
+
+    messageBox.style.color = success
+        ? "#166534"
+        : "#991b1b";
+
 }
 
-// Submit enquiry
+// =====================================
+// CUSTOMER ENQUIRY SUBMISSION
+// =====================================
+
 form.addEventListener("submit", async function(event) {
+
     event.preventDefault();
-    
+
     messageBox.style.display = "none";
-    
+
+    // GET FORM VALUES
+
     const name = document.getElementById("name").value.trim();
+
     const phone = document.getElementById("phone").value.trim();
+
     const car = document.getElementById("car").value;
+
     const budget = document.getElementById("budget").value;
+
     const location = document.getElementById("location").value.trim();
+
     const timeline = document.getElementById("timeline").value;
+
     const consent = document.getElementById("consent").checked;
-    
+
+    // VALIDATION
+
     if (!name || !phone || !car || !budget || !location || !timeline) {
+
         showMessage("Please complete all fields.", false);
+
         return;
     }
-    
+
     if (!/^[6-9][0-9]{9}$/.test(phone)) {
-        showMessage("Please enter a valid 10-digit Indian mobile number.", false);
+
+        showMessage(
+            "Please enter a valid 10-digit Indian mobile number.",
+            false
+        );
+
         return;
     }
-    
+
     if (!consent) {
-        showMessage("Please agree to the contact consent.", false);
+
+        showMessage(
+            "Please agree to the contact consent.",
+            false
+        );
+
         return;
     }
-    
+
+    // CHECK CONNECTION
+
     if (!window.supabase) {
-        showMessage("Connection library could not load. Check your internet and reload the website.", false);
+
+        showMessage(
+            "Connection error. Please refresh the website.",
+            false
+        );
+
         return;
     }
-    
+
+    // DISABLE BUTTON
+
     submitBtn.disabled = true;
+
     submitBtn.textContent = "Submitting enquiry...";
-    
+
+    // SAVE TO SUPABASE
+
     try {
-        const {error } = await db
+
+        const { error } = await db
             .from("customer_leads")
-            .insert([{
-                name: name,
-                phone: phone,
-                car: car,
-                budget: budget,
-                location: location,
-                timeline: timeline,
-                message: ""
-            }])
-            .select();
-        
+            .insert([
+
+                {
+                    name: name,
+                    phone: phone,
+                    car: car,
+                    budget: budget,
+                    location: location,
+                    timeline: timeline,
+                    message: ""
+                }
+
+            ]);
+
         if (error) {
-            console.error("Supabase enquiry error:", error);
-            showMessage("Could not save enquiry: " + error.message, false);
+
+            console.error("SUPABASE ERROR:", error);
+
+            showMessage(
+                "Could not save enquiry: " + error.message,
+                false
+            );
+
             return;
         }
-        
+
+        // SUCCESS
+
         form.reset();
-        
+
         showMessage(
             "Success! Your car enquiry has been submitted. Our team will contact you soon.",
             true
         );
-        
-    } catch (error) {
-        console.error("Submission error:", error);
-        showMessage("Connection problem: " + error.message, false);
-        
-    } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Submit My Enquiry →";
+
     }
+
+    catch (error) {
+
+        console.error(error);
+
+        showMessage(
+            "Connection problem: " + error.message,
+            false
+        );
+
+    }
+
+    finally {
+
+        submitBtn.disabled = false;
+
+        submitBtn.textContent = "Submit My Enquiry →";
+
+    }
+
 });
