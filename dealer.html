@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dealer Dashboard | AutoLead Bengaluru</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f3f6fb;
+      color: #172033;
+    }
+
+    header {
+      background: #101d35;
+      color: white;
+      padding: 20px;
+    }
+
+    .header-inner {
+      max-width: 900px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    header h1 {
+      font-size: 21px;
+    }
+
+    header p {
+      font-size: 12px;
+      color: #b9c7dc;
+      margin-top: 5px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 9px;
+      padding: 12px 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .logout {
+      background: #ef4444;
+      color: white;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 25px auto;
+      padding: 0 15px;
+    }
+
+    .box, .lead-card {
+      background: white;
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.05);
+      margin-bottom: 18px;
+    }
+
+    .login-box {
+      max-width: 420px;
+      margin: 55px auto;
+    }
+
+    h2 {
+      margin-bottom: 15px;
+      font-size: 21px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      margin: 8px 0 15px;
+      border: 1px solid #d7deea;
+      border-radius: 9px;
+      font-size: 15px;
+    }
+
+    .primary {
+      background: #2563eb;
+      color: white;
+      width: 100%;
+      font-size: 15px;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .refresh {
+      background: #e0eaff;
+      color: #1745a0;
+    }
+
+    .muted {
+      color: #68758b;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .lead-card h3 {
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .lead-info {
+      line-height: 1.8;
+      font-size: 14px;
+      color: #42506a;
+      margin: 12px 0;
+      overflow-wrap: anywhere;
+    }
+
+    .status-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    select {
+      flex: 1;
+      min-width: 0;
+      padding: 12px;
+      border: 1px solid #d7deea;
+      border-radius: 9px;
+      background: white;
+      font-size: 14px;
+    }
+
+    .save {
+      background: #172f56;
+      color: white;
+    }
+
+    .whatsapp {
+      display: block;
+      text-align: center;
+      text-decoration: none;
+      background: #16a34a;
+      color: white;
+      padding: 13px;
+      border-radius: 9px;
+      font-weight: bold;
+      margin-top: 12px;
+    }
+
+    .message {
+      padding: 12px;
+      border-radius: 9px;
+      margin: 12px 0;
+      font-size: 14px;
+      display: none;
+      overflow-wrap: anywhere;
+    }
+
+    .error {
+      display: block;
+      color: #991b1b;
+      background: #fee2e2;
+    }
+
+    .success {
+      display: block;
+      color: #166534;
+      background: #dcfce7;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 35px 15px;
+      color: #68758b;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px 10px;
+      color: #7b879a;
+      font-size: 12px;
+    }
+
+    @media (max-width: 480px) {
+      .header-inner {
+        align-items: flex-start;
+      }
+
+      header h1 {
+        font-size: 18px;
+      }
+
+      .status-row {
+        flex-direction: column;
+      }
+
+      .save {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-inner">
+    <div>
+      <h1>AUTOLEAD</h1>
+      <p>DEALER DASHBOARD · BENGALURU</p>
+    </div>
+    <button class="logout" id="logoutBtn" style="display:none;">Logout</button>
+  </div>
+</header>
+
+<main>
+
+  <section class="box login-box" id="loginBox">
+    <h2>Dealer Login</h2>
+    <p class="muted">Sign in to view your assigned customer enquiries.</p>
+
+    <form id="loginForm">
+      <label>Email address</label>
+      <input type="email" id="email" placeholder="Enter your email" required>
+
+      <label>Password</label>
+      <input type="password" id="password" placeholder="Enter your password" required>
+
+      <button class="primary" id="loginBtn" type="submit">Login</button>
+    </form>
+
+    <div id="loginMessage" class="message"></div>
+  </section>
+
+  <section id="dashboard" style="display:none;">
+
+    <div class="box">
+      <h2 id="dealerName">Welcome, Dealer</h2>
+      <p class="muted">Here are the customer enquiries assigned to your account.</p>
+    </div>
+
+    <div class="toolbar">
+      <div>
+        <h2 style="margin:0;">My Enquiries</h2>
+        <p class="muted" id="leadCount">Loading enquiries...</p>
+      </div>
+      <button class="refresh" id="refreshBtn">↻ Refresh</button>
+    </div>
+
+    <div id="pageMessage" class="message"></div>
+    <div id="leadsList"></div>
+
+  </section>
+
+</main>
+
+<footer>
+  AutoLead Bengaluru<br>
+  Developed &amp; Created by Mohammed Zuhaib
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="dealer-script.js" defer></script>
+
+</body>
+</html>

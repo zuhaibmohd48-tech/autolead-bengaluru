@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AutoLead Bengaluru Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:#0b1120;color:#fff;
+  font-family:Arial,sans-serif;
+}
+header{
+  background:#111b2e;padding:18px;
+  display:flex;justify-content:space-between;
+  align-items:center;flex-wrap:wrap;gap:10px;
+  border-bottom:1px solid #293951;
+}
+.logo{font-size:23px;font-weight:800;color:#45d6b5}
+.logo span{color:white}
+.small{font-size:12px;color:#9cabc2;margin-top:5px}
+.container{max-width:1100px;margin:auto;padding:18px}
+.card{
+  background:#111b2e;border:1px solid #293951;
+  border-radius:14px;padding:18px;margin-bottom:18px;
+}
+h2{font-size:19px;margin-bottom:15px}
+button{
+  border:0;border-radius:9px;padding:12px 15px;
+  background:#45d6b5;color:#07151a;
+  font-weight:bold;cursor:pointer;
+}
+button:disabled{opacity:.5}
+.secondary{background:#293951;color:white}
+input,select{
+  width:100%;padding:13px;margin:7px 0 13px;
+  border:1px solid #35445c;border-radius:9px;
+  background:#0b1120;color:white;font-size:14px;
+}
+label{font-size:13px;color:#aab8cc}
+.stats{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:12px;margin-bottom:18px;
+}
+.stat{
+  background:#111b2e;border:1px solid #293951;
+  border-radius:13px;padding:16px;
+}
+.stat span{font-size:12px;color:#aab8cc}
+.stat strong{
+  display:block;font-size:26px;
+  color:#45d6b5;margin-top:8px;
+}
+.lead{
+  background:#0d1728;border:1px solid #293951;
+  padding:15px;border-radius:12px;margin-top:12px;
+}
+.lead h3{font-size:17px;margin-bottom:9px}
+.detail{font-size:13px;color:#c0ccdc;line-height:1.9}
+.badge{
+  display:inline-block;padding:6px 10px;
+  border-radius:20px;background:#293951;
+  color:#d7e3f4;font-size:11px;margin:5px 0 10px;
+}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>*{flex:1;min-width:130px}
+.hidden{display:none!important}
+.login{max-width:420px;margin:65px auto}
+#message{font-size:13px;margin-top:12px;color:#ffcf75}
+.empty{text-align:center;color:#9cabc2;padding:25px}
+footer{text-align:center;color:#75849c;font-size:12px;padding:25px}
+@media(max-width:500px){
+ .stats{grid-template-columns:1fr 1fr}
+ .container{padding:12px}
+ header{padding:14px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+ <div>
+  <div class="logo">AUTO<span>LEAD</span></div>
+  <div class="small">BENGALURU • ADMIN CONTROL PANEL</div>
+ </div>
+ <button id="logoutBtn" class="secondary hidden">Logout</button>
+</header>
+
+<div id="loginBox" class="container login">
+ <div class="card">
+  <h2>Admin Login</h2>
+  <p class="small">Welcome to AutoLead Bengaluru</p>
+
+  <label>Email</label>
+  <input id="email" type="email" placeholder="Admin email">
+
+  <label>Password</label>
+  <input id="password" type="password" placeholder="Password">
+
+  <button id="loginBtn" style="width:100%">Login</button>
+  <div id="message"></div>
+ </div>
+</div>
+
+<main id="dashboard" class="container hidden">
+
+ <div class="row" style="align-items:center;margin-bottom:18px">
+  <div>
+   <h2>Admin Dashboard</h2>
+   <p class="small">Manage your customers and dealers</p>
+  </div>
+  <button id="refreshBtn" class="secondary">Refresh</button>
+ </div>
+
+ <div class="stats">
+  <div class="stat">
+   <span>Total Enquiries</span>
+   <strong id="totalCount">0</strong>
+  </div>
+  <div class="stat">
+   <span>Pending Assignment</span>
+   <strong id="pendingCount">0</strong>
+  </div>
+  <div class="stat">
+   <span>Assigned Leads</span>
+   <strong id="assignedCount">0</strong>
+  </div>
+ </div>
+
+ <section class="card">
+  <h2>Customer Enquiries</h2>
+
+  <input id="searchBox" placeholder="Search customer, phone, car or location">
+
+  <select id="filter">
+   <option value="all">All enquiries</option>
+   <option value="pending">Pending assignment</option>
+   <option value="assigned">Assigned enquiries</option>
+  </select>
+
+  <div id="leadsList">
+   <div class="empty">Loading...</div>
+  </div>
+ </section>
+
+ <section class="card">
+  <h2>Registered Dealers</h2>
+  <div id="dealersList">
+   <div class="empty">Loading dealers...</div>
+  </div>
+ </section>
+
+</main>
+
+<footer>
+ AutoLead Bengaluru<br>
+ Developed &amp; Created by Mohammed Zuhaib
+</footer>
+
+<script>
+const SUPABASE_URL =
+"https://upskbpteegbiiyhdurdl.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_4jwztvCOVnTFUrmqjdyhdQ_LI8MpL87";
+
+const ADMIN_EMAIL = "zuhaibmohd48@gmail.com";
+
+const db = window.supabase.createClient(
+ SUPABASE_URL,
+ SUPABASE_KEY
+);
+
+let leads = [];
+let dealers = [];
+
+const $ = id => document.getElementById(id);
+
+const STATUSES = [
+ "New",
+ "Contacted",
+ "Interested",
+ "Visit Scheduled",
+ "Sold",
+ "Not Interested"
+];
+
+function safe(value){
+ return String(value ?? "").replace(/[&<>"']/g,c=>({
+  "&":"&amp;",
+  "<":"&lt;",
+  ">":"&gt;",
+  '"':"&quot;",
+  "'":"&#39;"
+ })[c]);
+}
+
+function customerName(x){
+ return x.name || x.customer_name || "Customer";
+}
+
+function customerPhone(x){
+ return x.phone || x.mobile || "Not provided";
+}
+
+function customerCar(x){
+ return x.car || x.car_model || x.vehicle || "Not specified";
+}
+
+function dealerName(id){
+ const d = dealers.find(x=>x.id===id);
+ return d ? d.dealer_name : "Unknown dealer";
+}
+
+function message(text){
+ $("message").textContent = text;
+}
+
+async function login(){
+ const email = $("email").value.trim();
+ const password = $("password").value;
+
+ if(!email || !password){
+  message("Enter your email and password.");
+  return;
+ }
+
+ if(email.toLowerCase() !== ADMIN_EMAIL){
+  message("This account is not authorised as admin.");
+  return;
+ }
+
+ $("loginBtn").disabled = true;
+ message("Signing in...");
+
+ const {data,error} = await db.auth.signInWithPassword({
+  email,password
+ });
+
+ $("loginBtn").disabled = false;
+
+ if(error){
+  message("LOGIN ERROR: "+error.message);
+  return;
+ }
+
+ $("loginBox").classList.add("hidden");
+ $("dashboard").classList.remove("hidden");
+ $("logoutBtn").classList.remove("hidden");
+
+ await loadDashboard();
+}
+
+async function loadDashboard(){
+ $("leadsList").innerHTML =
+ '<div class="empty">Loading enquiries...</div>';
+
+ $("dealersList").innerHTML =
+ '<div class="empty">Loading dealers...</div>';
+
+ const [leadResult,dealerResult] = await Promise.all([
+  db.from("customer_leads")
+   .select("*")
+   .order("created_at",{ascending:false}),
+
+  db.from("dealer_profiles")
+   .select("*")
+   .order("created_at",{ascending:false})
+ ]);
+
+ if(leadResult.error){
+  $("leadsList").innerHTML =
+   '<div class="empty">Lead error: '+
+   safe(leadResult.error.message)+'</div>';
+  return;
+ }
+
+ if(dealerResult.error){
+  $("dealersList").innerHTML =
+   '<div class="empty">Dealer error: '+
+   safe(dealerResult.error.message)+'</div>';
+  return;
+ }
+
+ leads = leadResult.data || [];
+ dealers = dealerResult.data || [];
+
+ updateStats();
+ renderLeads();
+ renderDealers();
+}
+
+function updateStats(){
+ const assigned = leads.filter(x=>x.assigned_dealer_id).length;
+
+ $("totalCount").textContent = leads.length;
+ $("assignedCount").textContent = assigned;
+ $("pendingCount").textContent = leads.length-assigned;
+}
+
+function renderLeads(){
+ const search = $("searchBox").value.toLowerCase().trim();
+ const filter = $("filter").value;
+
+ const filtered = leads.filter(x=>{
+  const assigned = !!x.assigned_dealer_id;
+
+  if(filter==="pending" && assigned) return false;
+  if(filter==="assigned" && !assigned) return false;
+
+  const text = [
+   customerName(x),
+   customerPhone(x),
+   customerCar(x),
+   x.location,
+   x.budget
+  ].join(" ").toLowerCase();
+
+  return text.includes(search);
+ });
+
+ if(!filtered.length){
+  $("leadsList").innerHTML =
+   '<div class="empty">No enquiries found.</div>';
+  return;
+ }
+
+ $("leadsList").innerHTML = filtered.map(x=>{
+  const status = STATUSES.includes(x.lead_status)
+   ? x.lead_status : "New";
+
+  const dealerOptions = [
+   '<option value="">Select dealer</option>',
+   ...dealers.map(d=>
+    `<option value="${safe(d.id)}"
+     ${d.id===x.assigned_dealer_id?"selected":""}>
+     ${safe(d.dealer_name || "Dealer")}
+    </option>`
+   )
+  ].join("");
+
+  const statusOptions = STATUSES.map(s=>
+   `<option value="${safe(s)}"
+    ${s===status?"selected":""}>
+    ${safe(s)}
+   </option>`
+  ).join("");
+
+  return `
+   <div class="lead">
+
+    <h3>${safe(customerName(x))}</h3>
+
+    <span class="badge">
+     ${x.assigned_dealer_id?"ASSIGNED":"PENDING ASSIGNMENT"}
+    </span>
+
+    <div class="detail">
+     📞 Phone: ${safe(customerPhone(x))}<br>
+     🚗 Car: ${safe(customerCar(x))}<br>
+     💰 Budget: ${safe(x.budget || "Not provided")}<br>
+     📍 Location: ${safe(x.location || "Not provided")}<br>
+     ⏰ Timeline: ${safe(x.timeline || "Not provided")}<br>
+     💬 Message: ${safe(x.message || "No message")}<br>
+     📅 Date: ${safe(x.created_at
+      ? new Date(x.created_at).toLocaleString("en-IN")
+      : "Not available")}<br>
+     👤 Dealer: ${safe(x.assigned_dealer_id
+      ? dealerName(x.assigned_dealer_id)
+      : "Not assigned")}
+    </div>
+
+    <label>Assign Dealer</label>
+    <select id="dealer-${safe(x.id)}">
+     ${dealerOptions}
+    </select>
+
+    <button style="width:100%"
+     onclick="assignLead('${safe(x.id)}')">
+     Assign / Change Dealer
+    </button>
+
+    <br><br>
+
+    <label>Enquiry Status</label>
+    <select id="status-${safe(x.id)}">
+     ${statusOptions}
+    </select>
+
+    <button class="secondary" style="width:100%"
+     onclick="updateStatus('${safe(x.id)}')">
+     Update Status
+    </button>
+
+   </div>
+  `;
+ }).join("");
+}
+
+async function assignLead(id){
+ const dealerId = $("dealer-"+id).value;
+
+ if(!dealerId){
+  alert("Please select a dealer.");
+  return;
+ }
+
+ const {error} = await db
+  .from("customer_leads")
+  .update({assigned_dealer_id:dealerId})
+  .eq("id",id);
+
+ if(error){
+  alert("ASSIGNMENT ERROR: "+error.message);
+  return;
+ }
+
+ alert("Enquiry assigned successfully!");
+ await loadDashboard();
+}
+
+async function updateStatus(id){
+ const status = $("status-"+id).value;
+
+ if(!STATUSES.includes(status)){
+  alert("Invalid status.");
+  return;
+ }
+
+ const {error} = await db
+  .from("customer_leads")
+  .update({lead_status:status})
+  .eq("id",id);
+
+ if(error){
+  alert("STATUS ERROR: "+error.message);
+  return;
+ }
+
+ alert("Enquiry status updated successfully!");
+ await loadDashboard();
+}
+
+function renderDealers(){
+ if(!dealers.length){
+  $("dealersList").innerHTML =
+   '<div class="empty">No dealers registered.</div>';
+  return;
+ }
+
+ $("dealersList").innerHTML = dealers.map(d=>{
+  const count = leads.filter(
+   x=>x.assigned_dealer_id===d.id
+  ).length;
+
+  return `
+   <div class="lead">
+    <h3>${safe(d.dealer_name || "Dealer")}</h3>
+    <div class="detail">
+     📞 Phone: ${safe(d.phone || "Not provided")}<br>
+     📍 Area: ${safe(d.area || "Not provided")}<br>
+     🚗 Assigned enquiries: ${count}
+    </div>
+   </div>
+  `;
+ }).join("");
+}
+
+async function logout(){
+ await db.auth.signOut();
+
+ $("dashboard").classList.add("hidden");
+ $("logoutBtn").classList.add("hidden");
+ $("loginBox").classList.remove("hidden");
+ $("password").value = "";
+
+ message("Logged out successfully.");
+}
+
+$("loginBtn").addEventListener("click",login);
+$("logoutBtn").addEventListener("click",logout);
+$("refreshBtn").addEventListener("click",loadDashboard);
+$("searchBox").addEventListener("input",renderLeads);
+$("filter").addEventListener("change",renderLeads);
+
+(async function checkSession(){
+ const {data} = await db.auth.getSession();
+ const user = data.session?.user;
+
+ if(user && user.email?.toLowerCase()===ADMIN_EMAIL){
+  $("loginBox").classList.add("hidden");
+  $("dashboard").classList.remove("hidden");
+  $("logoutBtn").classList.remove("hidden");
+  await loadDashboard();
+ }else if(user){
+  await db.auth.signOut();
+ }
+})();
+</script>
+
+</body>
+</html>

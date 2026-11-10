@@ -1,0 +1,244 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background: #080d18;
+    color: #fff;
+    font-family: Arial, sans-serif;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 22px 7%;
+    background: #0c1423;
+}
+
+.logo {
+    font-size: 22px;
+    font-weight: 900;
+    letter-spacing: 1px;
+}
+
+.logo span {
+    color: #28aaff;
+}
+
+.nav-btn {
+    text-decoration: none;
+    color: white;
+    background: #168bdf;
+    padding: 11px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+.hero {
+    padding: 75px 8% 55px;
+    background: radial-gradient(ellipse at top right, #103b68, #080d18 65%);
+}
+
+.badge, .section-label {
+    color: #48b9ff;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    margin-bottom: 22px;
+}
+
+.hero h1 {
+    font-size: clamp(48px, 10vw, 76px);
+    line-height: 1.08;
+    margin-bottom: 22px;
+}
+
+.hero h1 span {
+    color: #32aaff;
+}
+
+.hero p, .categories p, .enquiry p {
+    color: #a8b4c7;
+    line-height: 1.7;
+    max-width: 430px;
+    margin-bottom: 27px;
+}
+
+.primary-btn, .submit-btn {
+    display: inline-block;
+    text-decoration: none;
+    background: linear-gradient(90deg, #168bdf, #35b7ff);
+    color: white;
+    padding: 15px 24px;
+    border: none;
+    border-radius: 9px;
+    font-weight: bold;
+}
+
+.hero-info {
+    display: flex;
+    gap: 35px;
+    margin-top: 55px;
+}
+
+.hero-info div {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.hero-info strong {
+    color: #45b9ff;
+    font-size: 18px;
+}
+
+.hero-info small {
+    color: #a8b4c7;
+    font-size: 11px;
+}
+
+.categories, .enquiry {
+    padding: 55px 7%;
+}
+
+.categories h2, .enquiry h2 {
+    font-size: 27px;
+    margin-bottom: 12px;
+}
+
+.car-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 13px;
+    margin-top: 25px;
+}
+
+.car-card {
+    background: #111d30;
+    border: 1px solid #243650;
+    color: white;
+    padding: 25px 10px;
+    border-radius: 12px;
+    font-size: 27px;
+    cursor: pointer;
+}
+
+.car-card span {
+    display: block;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.car-card.active {
+    border-color: #32aaff;
+    background: #142c46;
+}
+
+.enquiry {
+    background: #0c1423;
+}
+
+form {
+    max-width: 500px;
+    margin-top: 25px;
+}
+
+label {
+    display: block;
+    color: #d9e3f1;
+    font-size: 13px;
+    margin: 17px 0 8px;
+}
+
+input:not([type="checkbox"]), select {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #263b55;
+    background: #101d30;
+    color: white;
+    border-radius: 8px;
+    outline: none;
+    font-size: 14px;
+}
+
+input:focus, select:focus {
+    border-color: #32aaff;
+}
+
+select option {
+    background: #101d30;
+}
+
+.consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    line-height: 1.6;
+    color: #a8b4c7;
+}
+
+.consent input {
+    margin-top: 4px;
+}
+
+.submit-btn {
+    width: 100%;
+    margin-top: 22px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+#message {
+    margin-top: 20px;
+    color: #54d99a;
+    line-height: 1.6;
+}
+
+footer {
+    padding: 35px 7%;
+    text-align: center;
+    background: #070b13;
+}
+
+footer p {
+    color: #a8b4c7;
+    margin: 12px 0;
+}
+
+footer small {
+    color: #718096;
+}
+
+@media (max-width: 480px) {
+    .hero {
+        padding-top: 55px;
+    }
+
+    .hero-info {
+        gap: 18px;
+    }
+
+    .hero-info small {
+        font-size: 10px;
+    }
+    .developer-credit {
+    margin: 20px 0;
+    color: #899bb2;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+}
+
+.developer-credit strong {
+    display: block;
+    color: #35b7ff;
+    font-size: 15px;
+    margin-top: 7px;
+}
+}
